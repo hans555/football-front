@@ -16,7 +16,7 @@ You may also see any lint errors in the console.
 
 ## Backend Server Files
 
-You can find the backend [here](https://github.com/hans555/football-back)
+You can find the backend files [here](https://github.com/hans555/football-back)
 
 
 ### Assumption
