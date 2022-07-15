@@ -2,7 +2,8 @@ import "./App.css";
 import React, { useState, useEffect } from "react";
 
 function App() {
-  const [teamRanking, setTeamRanking] = useState([]);
+  const [firstGroupRanking, setFirstGroupRanking] = useState([]);
+  const [secondGroupRanking, setSecondGroupRanking] = useState([]);
   const [teamString, setTeamString] = useState("");
   const [matchString, setMatchString] = useState("");
 
@@ -51,7 +52,7 @@ function App() {
           team1,
           team2,
           score1,
-          score2
+          score2,
         };
         matches.push(match_obj);
       }
@@ -62,10 +63,9 @@ function App() {
   const handleSubmitMatches = () => {
     let teams = parseTeamString(teamString);
     let matches = parseMatchString(matchString);
-    console.log(teams)
     let payload = {
       teams,
-      matches
+      matches,
     };
     const requestUrl = `${process.env.REACT_APP_BACKEND_SERVICE}/football/post-match`;
     fetch(requestUrl, {
@@ -76,11 +76,30 @@ function App() {
       .then((resp) => {
         if (resp.ok) {
           resp.json().then((response) => {
-            console.log(response.team_ranking)
-            setTeamRanking(response.team_ranking)
+            setFirstGroupRanking(response.first_group_rank);
+            setSecondGroupRanking(response.second_group_rank);
           });
         } else {
           console.log("Failed to update results");
+        }
+      })
+      .catch((e) => console.log(e));
+  };
+
+  const handleResetMatches = () => {
+    const requestUrl = `${process.env.REACT_APP_BACKEND_SERVICE}/football/reset-match`;
+    fetch(requestUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((resp) => {
+        if (resp.ok) {
+          setMatchString("");
+          setTeamString("");
+          setFirstGroupRanking([]);
+          setSecondGroupRanking([]);
+        } else {
+          console.log("Failed to reset results");
         }
       })
       .catch((e) => console.log(e));
@@ -114,17 +133,48 @@ function App() {
         <div className="Form-row">
           <button
             className="Form-button"
-            disabled={matchString === "" || teamString === ""}
+            disabled={
+              matchString === "" ||
+              teamString === "" ||
+              firstGroupRanking.length !== 0 ||
+              secondGroupRanking.length !== 0
+            }
             onClick={handleSubmitMatches}
           >
             Submit Result
           </button>
         </div>
-        {teamRanking.length === 0 ? (
+        <div className="Form-row">
+          <button
+            className="Form-button"
+            disabled={
+              firstGroupRanking.length === 0 && secondGroupRanking.length === 0
+            }
+            onClick={handleResetMatches}
+          >
+            Reset Result
+          </button>
+        </div>
+        {firstGroupRanking.length === 0 && secondGroupRanking.length === 0 ? (
           <div />
         ) : (
-          <div className="Form-row">
-            <h5>hello results</h5>
+          <div className="List-row">
+            <div>
+              <h5>Group 1 Result</h5>
+              <ol>
+                {firstGroupRanking.map((team, index) => {
+                  return <li key={index}>{team.name}</li>;
+                })}
+              </ol>
+            </div>
+            <div>
+              <h5>Group 2 Result</h5>
+              <ol>
+                {secondGroupRanking.map((team, index) => {
+                  return <li key={index}>{team.name}</li>;
+                })}
+              </ol>
+            </div>
           </div>
         )}
       </div>

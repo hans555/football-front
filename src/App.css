@@ -50,3 +50,8 @@
 .Form-button:hover {
   background-color: #a5a5a5;
 }
+
+.List-row {
+  display: flex;
+  justify-content: space-evenly
+}
