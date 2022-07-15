@@ -17,4 +17,4 @@ You may also see any lint errors in the console.
 
 ### Assumption
 
-Assume all input are in correct format.
+Assume all input are in correct format and registration date is referring to the current year since it is missing
